@@ -32,7 +32,8 @@ namespace Bulky.DataAccess.Data
                     ListPrice = 99,
                     Price = 90,
                     Price50 = 85,
-                    Price100 = 80
+                    Price100 = 80,
+                    CategoryId = 1,
                 },
                 new Product
                 {
@@ -44,11 +45,12 @@ namespace Bulky.DataAccess.Data
                     ListPrice = 98,
                     Price = 89,
                     Price50 = 84,
-                    Price100 = 79
+                    Price100 = 79,
+                    CategoryId = 2,
                 },
                 new Product
                 {
-                    Id = 3,
+                    Id = 5,
                     Title = "Title3",
                     Description = "Description3",
                     ISBN = "Isbn3",
@@ -56,7 +58,8 @@ namespace Bulky.DataAccess.Data
                     ListPrice = 97,
                     Price = 88,
                     Price50 = 83,
-                    Price100 = 78
+                    Price100 = 78,
+                    CategoryId = 5,
                 }
                 );
         }
