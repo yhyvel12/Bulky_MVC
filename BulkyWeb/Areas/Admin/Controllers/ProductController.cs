@@ -10,10 +10,11 @@ namespace BulkyWeb.Areas.Admin.Controllers
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-
-        public ProductController(IUnitOfWork db)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public ProductController(IUnitOfWork db, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = db;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public IActionResult Index()
@@ -53,7 +54,40 @@ namespace BulkyWeb.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.Product.Add(productVM.Product);
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+
+                if (file != null)
+                {
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName); //random name and extension of file
+                    string productPath = Path.Combine(wwwRootPath, @"images\product"); //exact path of file
+
+                    if (string.IsNullOrEmpty(productVM.Product.ImageUrl)) //if excist then we have to delete the old image
+                    {
+                        var oldImagePath = Path.Combine(wwwRootPath, productVM.Product.ImageUrl.TrimStart('\\')); //in database it's start the \
+
+                        if (System.IO.File.Exists(oldImagePath)) //delete file
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
+
+                    using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create)) //new image
+                    {
+                        file.CopyTo(fileStream); //copy file new location
+                    }
+
+                    productVM.Product.ImageUrl = @"\images\product\" + fileName;
+                }
+
+                if (productVM.Product.Id == 0)
+                {
+                    _unitOfWork.Product.Add(productVM.Product);
+                }
+                else
+                {
+                    _unitOfWork.Product.Update(productVM.Product);
+                }
+
                 _unitOfWork.Save();
                 TempData["success"] = "Product created successfuly!!";
 
